@@ -1,4 +1,4 @@
-package com.example.webchatserver;
+package com.finalProject.chess;
 
 import java.util.ArrayList;
 import java.util.HashMap;

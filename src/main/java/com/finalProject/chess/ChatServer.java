@@ -1,4 +1,4 @@
-package com.example.webchatserver;
+package com.finalProject.chess;
 
 
 import jakarta.websocket.*;
