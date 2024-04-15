@@ -38,7 +38,7 @@ body.home-page {
     background-color: #f7b2a8;
 }
 
-.chat-server-btn {
+.chat-server-btn, .new-game-btn {
     background-color: #4267b2;
     color: white;
     padding: 10px 20px;
@@ -48,7 +48,7 @@ body.home-page {
     text-align: center;
     margin-top: auto;
 }
-.chat-server-btn:hover{
+.chat-server-btn:hover, .new-game-btn:hover{
     color: yellow;
 }
 
