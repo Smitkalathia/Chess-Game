@@ -1,0 +1,54 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Chat Server</title>
+    <meta name="description" content="Real-time chat application">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/style.css">
+    <meta name="theme-color" content="#fafafa">
+</head>
+<body class="chat-server">
+<header>
+    <nav>
+        <a href="/">Chat server</a>
+        <a href="about.html">About</a>
+    </nav>
+</header>
+
+<div class="chat-container">
+    <aside class="chat-rooms">
+        <h2>List of Chat Servers</h2>
+        <div id="room-buttons" class="room-button-container">
+            <!-- Room buttons will be generated here by JavaScript -->
+        </div>
+        <button onclick="newRoom()" class="create-room-btn">Create New Room</button>
+        <button id="refreshButton" class="create-room-btn">Refresh</button>
+    </aside>
+    <section class="chat-window">
+        <div id="section-inner">
+        </div>
+        <div id="chatMessages" class="chat-messages">
+            <textarea id="log" readonly></textarea>
+        </div>
+        <footer class = "chat-footer">
+            <input type="text" id="input" placeholder="Enter your message" onkeydown="if(event.key === 'Enter'){sendMessage();}">
+            <button onclick="send()" class ="send-button">Send Message</button>
+            <!--<input type="file" id ="imageInput">-->
+        </footer>
+    </section>
+</div>
+
+
+<script src="js/vendor/modernizr-3.11.2.min.js"></script>
+<script src="js/plugins.js"></script>
+<script src="js/main.js"></script>
+<!-- Google Analytics: change UA-XXXXX-Y to be your site's ID. -->
+<script>
+    window.ga = function () { ga.q.push(arguments) }; ga.q = []; ga.l = +new Date;
+    ga('create', 'UA-XXXXX-Y', 'auto'); ga('set', 'anonymizeIp', true); ga('set', 'transport', 'beacon'); ga('send', 'pageview')
+</script>
+<script src="https://www.google-analytics.com/analytics.js" async></script>
+</body>
+</html>
