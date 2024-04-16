@@ -1,11 +1,14 @@
 package com.finalProject.chess;
 
+import jakarta.websocket.Session;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ChessBoard {
+    private final List<Session> players;
     private final Piece[][] board;
     boolean mate = false;
     String turn;
@@ -15,6 +18,7 @@ public class ChessBoard {
 
 
     public ChessBoard(){
+        players = new ArrayList<>();
         board = new Piece[8][8];
         turn = "white";
 
@@ -141,6 +145,35 @@ public class ChessBoard {
         if(checkMate()){
             System.out.println("Game over");
         }
+    }
+
+    public String getGameState() {
+        String gameState = "";
+
+        Piece[][] board = getBoard();
+
+        for (int row = 0; row < 8; row++){
+            for (int col = 0; col < 8; col++) {
+                Piece piece = board[row][col];
+                if(piece != null) {
+                    gameState += piece.color + piece;
+                }
+            }
+        }
+
+        return gameState;
+    }
+
+    public void addPlayer(Session player){
+        players.add(player);
+    }
+
+    public void removePlayer(Session player){
+        players.remove(player);
+    }
+
+    public boolean isEmpty(){
+        return players.isEmpty();
     }
 
 }
