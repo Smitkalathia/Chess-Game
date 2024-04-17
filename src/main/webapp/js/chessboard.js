@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function() {
     const board = document.querySelector('.chessboard');
     const gameID = 'uniqueGameID'; // This should be dynamically set per game instance
-    const ws = new WebSocket('http://localhost:8080/WSChatServer-1.0-SNAPSHOT/chess.html');
+    const ws = new WebSocket('ws://localhost:8080/WSChatServer-1.0-SNAPSHOT/chess/' + gameID);
 
     ws.onmessage = function(event) {
         const data = JSON.parse(event.data);
