@@ -225,16 +225,13 @@ footer {
     height: 50px;
 }
 .possible-move {
-    border: 2px dashed green;  //this is for the possible moves
+    border: 3px dashed green;
 }
 
-.black {
-    background-color: #777785;
+.selected {
+    border: 3px solid blue;
 }
 
-.white {
-    background-color: #eeeed2;
-}
 .dragging {
     opacity: 0.5;
 }
@@ -247,4 +244,11 @@ footer {
     font-size: 1.2em;
     margin: 10px auto;
     width: 90%;
+}
+.black {
+    background-color: #777785;
+}
+
+.white {
+    background-color: #eeeed2;
 }
