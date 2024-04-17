@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     ws.onmessage = function(event) {
         const data = JSON.parse(event.data);
+        console.log(data);
         updateBoardWithMoves(data.moves);
         updateGameStatus(data.status);
     };

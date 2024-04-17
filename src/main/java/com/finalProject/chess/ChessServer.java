@@ -39,7 +39,7 @@ public class ChessServer {
                 JSONArray moveArray = new JSONArray();
                 moveArray.put(move[0]);
                 moveArray.put(move[1]);
-                jsonArrMoves.put(jsonMoves);
+                jsonArrMoves.put(moveArray);
             }
 
             String positionKey = position[0] + "," + position[1];
