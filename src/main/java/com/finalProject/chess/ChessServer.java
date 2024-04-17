@@ -3,10 +3,13 @@ package com.finalProject.chess;
 import jakarta.websocket.*;
 import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -24,6 +27,27 @@ public class ChessServer {
         }
         ChessBoard game = games.get(gameID);
         game.addPlayer(session);
+
+        Map<Integer[], List<Integer[]>> nextMoves = game.getNextMoves();
+        JSONObject jsonMoves = new JSONObject();
+        for (Map.Entry<Integer[], List<Integer[]>> entry : nextMoves.entrySet()) {
+            Integer[] position = entry.getKey();
+            List<Integer[]> moves = entry.getValue();
+
+            JSONArray jsonArrMoves = new JSONArray();
+            for(Integer[] move : moves){
+                JSONArray moveArray = new JSONArray();
+                moveArray.put(move[0]);
+                moveArray.put(move[1]);
+                jsonArrMoves.put(jsonMoves);
+            }
+
+            String positionKey = position[0] + "," + position[1];
+            jsonMoves.put(positionKey, jsonArrMoves);
+        }
+
+        session.getBasicRemote().sendText(jsonMoves.toString());
+
     }
 
     @OnMessage
