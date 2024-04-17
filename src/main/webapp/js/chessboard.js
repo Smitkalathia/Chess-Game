@@ -1,8 +1,16 @@
 document.addEventListener("DOMContentLoaded", function() {
-    // Function to set up or reset the chessboard to its initial state
+    const board = document.querySelector('.chessboard');
+    const gameID = 'uniqueGameID'; // This should be dynamically set per game instance
+    const ws = new WebSocket('http://localhost:8080/WSChatServer-1.0-SNAPSHOT/chess.html');
+
+    ws.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        updateBoardWithMoves(data.moves);
+        updateGameStatus(data.status);
+    };
+
     function setupBoard() {
-        const board = document.querySelector('.chessboard');
-        board.innerHTML = '';  // Clear the existing board
+        board.innerHTML = '';
         const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
         const initialSetup = [
             ['rook', 'knight', 'bishop', 'queen', 'king', 'bishop', 'knight', 'rook'],
@@ -21,7 +29,11 @@ document.addEventListener("DOMContentLoaded", function() {
                 const piece = initialSetup[row][col];
                 const color = (row < 2) ? 'black' : 'white';
                 square.classList.add(((row + col) % 2 === 0) ? 'white' : 'black');
-                square.id = letters[col] + (8 - row);
+                square.id = `cell-${row}-${col}`;
+                square.setAttribute('draggable', true);
+                square.addEventListener('dragstart', dragStart);
+                square.addEventListener('dragover', allowDrop);
+                square.addEventListener('drop', drop);
 
                 if (piece) {
                     square.style.backgroundImage = `url('resources/${color}_${piece}.png')`;
@@ -29,20 +41,58 @@ document.addEventListener("DOMContentLoaded", function() {
                     square.style.backgroundRepeat = 'no-repeat';
                     square.style.backgroundPosition = 'center';
                 }
-
                 board.appendChild(square);
             }
         }
     }
 
-    // Initial setup of the board when the page loads
-    setupBoard();
+    function dragStart(event) {
+        event.dataTransfer.setData("text/plain", event.target.id);
+        event.target.classList.add('dragging');
+    }
 
-    // Add event listener to the New Game button to reset the chessboard
-    const newGameButton = document.querySelector('.new-game-btn');
-    newGameButton.addEventListener('click', function(e) {
-        e.preventDefault();  // Prevent the default action of the button (if it's a submit button or link)
-        setupBoard();  // Reset the board
-        console.log('Board reset to initial setup.');  // Log message to indicate the board was reset
-    });
+    function allowDrop(event) {
+        event.preventDefault();
+    }
+
+    function drop(event) {
+        event.preventDefault();
+        var sourceId = event.dataTransfer.getData("text");
+        var targetId = event.target.id;
+
+        let src = document.getElementById(sourceId);
+        let tgt = event.target;
+
+        if (tgt && src) {
+            let moveData = `${src.id},${tgt.id}`;
+            ws.send(moveData); // Send move to server via WebSocket
+            src.classList.remove('dragging');
+        }
+    }
+
+    function updateBoardWithMoves(moves) {
+        // Clear previous highlights
+        document.querySelectorAll('.possible-move').forEach(cell => {
+            cell.classList.remove('possible-move');
+        });
+
+        // Highlight new possible moves
+        Object.keys(moves).forEach(positionKey => {
+            let positions = positionKey.split(',');
+            let pieceCell = document.getElementById(`cell-${positions[0]}-${positions[1]}`);
+            moves[positionKey].forEach(move => {
+                let moveCell = document.getElementById(`cell-${move[0]}-${move[1]}`);
+                if (moveCell) {
+                    moveCell.classList.add('possible-move');
+                }
+            });
+        });
+    }
+
+    function updateGameStatus(status) {
+        const statusDiv = document.getElementById('game-status');
+        statusDiv.textContent = status;
+    }
+
+    setupBoard(); // Initial setup of the board
 });
