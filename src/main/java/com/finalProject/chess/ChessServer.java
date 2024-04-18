@@ -8,6 +8,8 @@ import org.json.JSONObject;
 
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,6 +69,8 @@ public class ChessServer {
         gameBoard.makeTheMove(session, position, move);
 
         viewGameState(gameID, session);
+
+
     }
 
     @OnClose
@@ -94,6 +98,7 @@ public class ChessServer {
         for(Session session : games.get(gameID).getPlayers()) {
             if(excludeSession == null || !session.getId().equals(excludeSession.getId())) {
                 session.getBasicRemote().sendText(gameState);
+                sendChessPieceImages(session);
             }
         }
     }
@@ -101,6 +106,26 @@ public class ChessServer {
     public static Session getSession(String sessionID){
 
         return sessions.get(sessionID);
+    }
+
+    private  void sendChessPieceImages(Session session) throws IOException {
+        String[] pieceNames = {"black_bishop", "black_king", "black_knight", "black_pawn", "black_queen", "black_rook", "white_bishop", "white_king", "white_knight", "white_pawn", "white_queen", "white_rook"};
+
+        for (String pieceName : pieceNames){
+            byte[] imageData = readImage(pieceName);
+            ByteBuffer byteBuffer = ByteBuffer.wrap(imageData);
+            session.getBasicRemote().sendBinary(byteBuffer);
+        }
+    }
+
+    private byte[] readImage(String imageName) throws IOException {
+        String imagePath = "/resources/" + imageName + ".png";
+        try (InputStream inputStream = getClass().getResourceAsStream(imagePath)) {
+            if (inputStream != null){
+                return inputStream.readAllBytes();
+            }
+        }
+        throw new IOException("Image not found");
     }
 }
 
