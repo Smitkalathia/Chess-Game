@@ -97,8 +97,19 @@ public class ChessBoard {
         return moves;
     }
 
-    public void makeTheMove(Integer[] piecePosition, Integer[] move){
+    public void makeTheMove(Session session, Integer[] piecePosition, Integer[] move){
 
+        if (!session.equals(players.get(0)) && !session.equals(players.get(1))){
+            return;
+        }
+
+        if (!session.equals(players.get(0)) && turn.equals("white")){
+            return;
+        }
+
+        if (!session.equals(players.get(1)) && turn.equals("black")){
+            return;
+        }
 
         if(board[move[0]][move[1]]!=null){
             List<Piece> pieces;
@@ -176,4 +187,7 @@ public class ChessBoard {
         return players.isEmpty();
     }
 
+    public List<Session> getPlayers(){
+        return players;
+    }
 }

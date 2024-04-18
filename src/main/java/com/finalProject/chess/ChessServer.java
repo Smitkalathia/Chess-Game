@@ -59,15 +59,17 @@ public class ChessServer {
 
         ChessBoard gameBoard = games.get(gameID);
 
-        gameBoard.makeTheMove(position, move);
 
-        viewGameState(gameID);
+
+        gameBoard.makeTheMove(session, position, move);
+
+        viewGameState(gameID, session);
     }
 
     @OnClose
     public void close(@PathParam("gameID") String gameID, Session session){
         ChessBoard game = games.get(gameID);
-        if (game!= null) {
+        if (game != null) {
             game.removePlayer(session);
             if(game.isEmpty()) {
                 games.remove(gameID);
@@ -76,10 +78,21 @@ public class ChessServer {
     }
 
 
-    private void viewGameState(String gameID) throws IOException {
+    private void viewGameState(String gameID, Session excludeSession) throws IOException {
         ChessBoard currentGame = games.get(gameID);
 
         String gameState = currentGame.getGameState();
+        Map<Integer[], List<Integer[]>> nextMoves = currentGame.getNextMoves();
+
+        JSONObject gameInfo = new JSONObject();
+        gameInfo.put("state", gameState);
+        gameInfo.put("moves", nextMoves);
+
+        for(Session session : games.get(gameID).getPlayers()) {
+            if(excludeSession == null || !session.getId().equals(excludeSession.getId())) {
+                session.getBasicRemote().sendText(gameState);
+            }
+        }
     }
 
 }
