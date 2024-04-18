@@ -37,6 +37,7 @@ public class main {
 
     public static void main(String[] args){
         Session session = ChessServer.getSession("sessionID");
+
         ChessBoard board = new ChessBoard();
         Piece[][] gameboard = board.getBoard();
 

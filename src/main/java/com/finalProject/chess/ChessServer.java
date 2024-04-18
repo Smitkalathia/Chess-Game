@@ -28,6 +28,7 @@ public class ChessServer {
         }
         ChessBoard game = games.get(gameID);
         game.addPlayer(session);
+
         sessions.put(session.getId(), session);
 
         Map<Integer[], List<Integer[]>> nextMoves = game.getNextMoves();
@@ -98,9 +99,9 @@ public class ChessServer {
     }
 
     public static Session getSession(String sessionID){
+
         return sessions.get(sessionID);
     }
-
 }
 
 
