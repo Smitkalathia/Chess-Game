@@ -2,13 +2,10 @@ package com.finalProject.chess;
 
 import jakarta.websocket.Session;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ChessBoard {
-    private final List<Session> players;
+    private String[] players = new String[2];
     private final Piece[][] board;
     boolean mate = false;
     String turn;
@@ -18,7 +15,9 @@ public class ChessBoard {
 
 
     public ChessBoard(){
-        players = new ArrayList<>();
+
+        players[0] = null;
+        players[1] = null;
         board = new Piece[8][8];
         turn = "white";
 
@@ -97,19 +96,7 @@ public class ChessBoard {
         return moves;
     }
 
-    public void makeTheMove(Session session, Integer[] piecePosition, Integer[] move){
-
-        if (!session.equals(players.get(0)) && !session.equals(players.get(1))){
-            return;
-        }
-
-        if (!session.equals(players.get(0)) && turn.equals("white")){
-            return;
-        }
-
-        if (!session.equals(players.get(1)) && turn.equals("black")){
-            return;
-        }
+    public void makeTheMove(Integer[] piecePosition, Integer[] move){
 
         if(board[move[0]][move[1]]!=null){
             List<Piece> pieces;
@@ -176,18 +163,28 @@ public class ChessBoard {
     }
 
     public void addPlayer(Session player){
-        players.add(player);
+        if(players[0]==null){
+            players[0] = player.getId();
+        } else {
+            players[1] = player.getId();
+        }
+
     }
 
     public void removePlayer(Session player){
-        players.remove(player);
+        if(players[0].equals(player.getId())){
+            players[0] = null;
+        } else {
+            players[1] = null;
+        }
+
     }
 
     public boolean isEmpty(){
-        return players.isEmpty();
+        return players[0]==null & players[1]==null;
     }
 
-    public List<Session> getPlayers(){
+    public String[] getPlayers(){
         return players;
     }
 }

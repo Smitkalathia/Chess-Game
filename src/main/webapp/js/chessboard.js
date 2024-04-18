@@ -1,15 +1,30 @@
 let selectedSquare = null;
 let movesData = {};
+let ws;
 //let curTurn = 'white';
 
 document.addEventListener("DOMContentLoaded", function() {
     const board = document.querySelector('.chessboard');
     const gameID = 'SHA123';
-    let ws = new WebSocket(`ws://localhost:8080/WSChatServer-1.0-SNAPSHOT/chess/${gameID}`);
+    ws = new WebSocket(`ws://localhost:8080/WSChatServer-1.0-SNAPSHOT/chess/${gameID}`);
+    console.log(`Web Socket connection on ws://localhost:8080/WSChatServer-1.0-SNAPSHOT/chess/${gameID} open`)
 
     ws.onmessage = function(event) {
-        movesData = JSON.parse(event.data);
-        console.log("Moves data received:", movesData);
+        let data = JSON.parse(event.data);
+        console.log("Moves data received:", data);
+        if(data["moveToMake"]!==""){
+            const move = data["moveToMake"];
+            const key = Object.keys(move)[0];
+            const fromRow = key.split(',')[0];
+            const fromColumn = key.split(',')[1];
+            const toRow = move[key].split(',')[0];
+            const toColumn = move[key].split(',')[1];
+            const fromSquare = document.getElementById(`${fromRow}-${fromColumn}`);
+            const toSquare = document.getElementById(`${toRow}-${toColumn}`);
+            movePieceWithoutSend(fromSquare, toSquare);
+        }
+        movesData = data["possibleMoves"];
+
     };
     function setupBoard() {
         board.innerHTML = '';
@@ -104,13 +119,25 @@ document.addEventListener("DOMContentLoaded", function() {
         fromSquare.style.backgroundRepeat = '';
         fromSquare.style.backgroundPosition = '';
 
-        const moveData = {
-            from: fromSquare.id.split('-').map(Number),
-            to: toSquare.id.split('-').map(Number)
-        };
-
-
+        movesData = {};
+        const moveData = {};
+        const fromKey = fromSquare.id.toString().replace('-', ',');
+        moveData[fromKey] = toSquare.id.toString().replace('-', ',');
+        console.log(moveData);
         ws.send(JSON.stringify(moveData));
+    }
+    function movePieceWithoutSend(fromSquare, toSquare) {
+        // Update the local board state
+        toSquare.style.backgroundImage = fromSquare.style.backgroundImage;
+        fromSquare.style.backgroundImage = '';
+
+        toSquare.style.backgroundSize = 'cover';
+        toSquare.style.backgroundRepeat = 'no-repeat';
+        toSquare.style.backgroundPosition = 'center';
+
+        fromSquare.style.backgroundSize = '';
+        fromSquare.style.backgroundRepeat = '';
+        fromSquare.style.backgroundPosition = '';
     }
 
     function isValidMove(fromSquare, toSquare) {
