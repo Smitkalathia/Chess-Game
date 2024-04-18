@@ -92,6 +92,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function movePiece(fromSquare, toSquare) {
+        // Update the local board state
         toSquare.style.backgroundImage = fromSquare.style.backgroundImage;
         fromSquare.style.backgroundImage = '';
 
@@ -102,6 +103,14 @@ document.addEventListener("DOMContentLoaded", function() {
         fromSquare.style.backgroundSize = '';
         fromSquare.style.backgroundRepeat = '';
         fromSquare.style.backgroundPosition = '';
+
+        const moveData = {
+            from: fromSquare.id.split('-').map(Number),
+            to: toSquare.id.split('-').map(Number)
+        };
+
+
+        ws.send(JSON.stringify(moveData));
     }
 
     function isValidMove(fromSquare, toSquare) {
