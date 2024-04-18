@@ -53,6 +53,8 @@ public class ChessServer {
 
         session.getBasicRemote().sendText(jsonMoves.toString());
 
+        sendChessPieceImages(session);
+
     }
 
     @OnMessage
@@ -63,8 +65,6 @@ public class ChessServer {
         Integer[] move = {Integer.parseInt(moveInfo[2]), Integer.parseInt(moveInfo[3])};
 
         ChessBoard gameBoard = games.get(gameID);
-
-
 
         gameBoard.makeTheMove(session, position, move);
 
@@ -97,8 +97,7 @@ public class ChessServer {
 
         for(Session session : games.get(gameID).getPlayers()) {
             if(excludeSession == null || !session.getId().equals(excludeSession.getId())) {
-                session.getBasicRemote().sendText(gameState);
-                sendChessPieceImages(session);
+                session.getBasicRemote().sendText(gameInfo.toString());
             }
         }
     }
