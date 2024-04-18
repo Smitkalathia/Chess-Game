@@ -1,7 +1,8 @@
 package com.finalProject.chess;
 
-import java.util.*;
+import jakarta.websocket.Session;
 
+import java.util.*;
 
 public class main {
 
@@ -35,10 +36,9 @@ public class main {
     }
 
     public static void main(String[] args){
+        Session session = ChessServer.getSession("sessionID");
         ChessBoard board = new ChessBoard();
         Piece[][] gameboard = board.getBoard();
-
-
 
         Map<Integer[], List<Integer[]>> moves = board.getNextMoves();
         for(Map.Entry<Integer[], List<Integer[]>> entry: moves.entrySet()){
@@ -50,7 +50,7 @@ public class main {
         }
         printBoard(gameboard);
         System.out.println();
-        board.makeTheMove(new Integer[]{1,5}, new Integer[]{2,5});
+        board.makeTheMove(session, new Integer[]{1,5}, new Integer[]{2,5});
         printBoard(gameboard);
         moves = board.getNextMoves();
         for(Map.Entry<Integer[], List<Integer[]>> entry: moves.entrySet()){
@@ -63,3 +63,5 @@ public class main {
         printBoard(gameboard);
     }
 }
+
+

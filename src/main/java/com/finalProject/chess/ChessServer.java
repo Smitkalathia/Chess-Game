@@ -19,6 +19,7 @@ import java.util.Map;
 @ServerEndpoint(value="/chess/{gameID}")
 public class ChessServer {
     private static Map<String, ChessBoard> games = new HashMap<>();
+    private static Map<String, Session> sessions = new HashMap<>();
 
     @OnOpen
     public void open(@PathParam("gameID") String gameID, Session session) throws IOException, EncodeException {
@@ -27,6 +28,7 @@ public class ChessServer {
         }
         ChessBoard game = games.get(gameID);
         game.addPlayer(session);
+        sessions.put(session.getId(), session);
 
         Map<Integer[], List<Integer[]>> nextMoves = game.getNextMoves();
         JSONObject jsonMoves = new JSONObject();
@@ -93,6 +95,10 @@ public class ChessServer {
                 session.getBasicRemote().sendText(gameState);
             }
         }
+    }
+
+    public static Session getSession(String sessionID){
+        return sessions.get(sessionID);
     }
 
 }
