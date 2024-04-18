@@ -1,20 +1,23 @@
+let selectedSquare = null;
+let movesData = {};
+//let curTurn = 'white';
+
 document.addEventListener("DOMContentLoaded", function() {
     const board = document.querySelector('.chessboard');
-    const gameID = 'uniqueGameID'; // This should be dynamically set per game instance
-    const ws = new WebSocket(`ws://localhost:8080/chess/${gameID}`);
-    let selectedPiece = null;  // To keep track of the currently selected chess piece
+    const gameID = 'SHA123';
+    let ws = new WebSocket(`ws://localhost:8080/WSChatServer-1.0-SNAPSHOT/chess/${gameID}`);
 
     ws.onmessage = function(event) {
-        const data = JSON.parse(event.data);
-        updateGameStatus(data.status);
+        movesData = JSON.parse(event.data);
+        console.log("Moves data received:", movesData);
     };
-
     function setupBoard() {
-        board.innerHTML = ''; // Clear the board for initial setup
+        board.innerHTML = '';
         const initialSetup = [
             ['rook', 'knight', 'bishop', 'queen', 'king', 'bishop', 'knight', 'rook'],
             ['pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn'],
-            Array(8).fill(null), Array(8).fill(null), Array(8).fill(null), Array(8).fill(null),
+            Array(8).fill(null), Array(8).fill(null),
+            Array(8).fill(null), Array(8).fill(null),
             ['pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn'],
             ['rook', 'knight', 'bishop', 'queen', 'king', 'bishop', 'knight', 'rook']
         ];
@@ -23,70 +26,98 @@ document.addEventListener("DOMContentLoaded", function() {
             for (let col = 0; col < 8; col++) {
                 const square = document.createElement('div');
                 square.classList.add('chess-square', (row + col) % 2 === 0 ? 'white' : 'black');
-                square.id = `cell-${row}-${col}`;
+                square.id = `${row}-${col}`;
                 board.appendChild(square);
                 const piece = initialSetup[row][col];
                 if (piece) {
-                    const color = row < 2 ? 'black' : (row >= 6 ? 'white' : '');
+
+                    const color = row < 2 ? 'white' : (row >= 6 ? 'black' : '');
                     square.style.backgroundImage = `url('resources/${color}_${piece}.png')`;
                     square.style.backgroundSize = 'cover';
                     square.style.backgroundRepeat = 'no-repeat';
                     square.style.backgroundPosition = 'center';
                 }
+                square.addEventListener('click', () => selectSquare(square));
             }
         }
     }
+    function selectSquare(square) {
+        if (!square.style.backgroundImage && !selectedSquare) {
+            console.log("Clicked on empty square");
+            return;
+        }
 
-    function handleSquareClick(event) {
-        const square = event.target.closest('.chess-square');
-        if (!square) return;
-        if (square.style.backgroundImage !== '') {
-            if (selectedPiece === square) {
-                clearSelection();
+        if (selectedSquare) {
+            if (isValidMove(selectedSquare, square)) {
+                movePiece(selectedSquare, square);
+                clearHighlights();
+                selectedSquare.classList.remove('selected');
+                selectedSquare = null;
+                return;
             } else {
-                clearSelection(); // Clear any previous selection
-                selectedPiece = square;
-                square.classList.add('selected');
-                showPossibleMoves(square.id);
+                clearHighlights();
+                selectedSquare.classList.remove('selected');
+                selectedSquare = null;
             }
-        } else if (selectedPiece && square.classList.contains('possible-move')) {
-            movePiece(selectedPiece, square);
-            selectedPiece = null;
+        }
+
+        if (square.style.backgroundImage) {
+            selectedSquare = square;
+            square.classList.add('selected');
+            highlightPossibleMoves(square);
         }
     }
 
-    function showPossibleMoves(pieceId) {
-        console.log(`Showing possible moves for ${pieceId}`);
-        document.querySelectorAll('.chess-square').forEach(cell => {
-            if (Math.random() > 0.9) { // Replace this placeholder logic with actual move logic
-                cell.classList.add('possible-move');
-            }
+
+    function highlightPossibleMoves(square) {
+        const [row, col] = square.id.split('-').map(Number);
+        const fromKey = `${row},${col}`;
+        const possibleMoves = movesData[fromKey];
+
+        if (possibleMoves) {
+            possibleMoves.forEach(move => {
+                const [moveRow, moveCol] = move;
+                const targetSquare = document.getElementById(`${moveRow}-${moveCol}`);
+                if (targetSquare) {
+                    targetSquare.classList.add('possible-move');
+                }
+            });
+        }
+    }
+
+    function clearHighlights() {
+        document.querySelectorAll('.chess-square.possible-move').forEach(square => {
+            square.classList.remove('possible-move');
         });
     }
 
     function movePiece(fromSquare, toSquare) {
         toSquare.style.backgroundImage = fromSquare.style.backgroundImage;
         fromSquare.style.backgroundImage = '';
-        ws.send(JSON.stringify({ from: fromSquare.id, to: toSquare.id }));
-        console.log(`Moved from ${fromSquare.id} to ${toSquare.id}`);
-        clearSelection();
+
+        toSquare.style.backgroundSize = 'cover';
+        toSquare.style.backgroundRepeat = 'no-repeat';
+        toSquare.style.backgroundPosition = 'center';
+
+        fromSquare.style.backgroundSize = '';
+        fromSquare.style.backgroundRepeat = '';
+        fromSquare.style.backgroundPosition = '';
     }
 
-    function clearSelection() {
-        document.querySelectorAll('.selected, .possible-move').forEach(cell => {
-            cell.classList.remove('selected', 'possible-move');
-        });
-        selectedPiece = null;
-    }
+    function isValidMove(fromSquare, toSquare) {
+        const fromRow = fromSquare.id.split('-')[0];
+        const fromCol = fromSquare.id.split('-')[1];
+        const toRow = toSquare.id.split('-')[0];
+        const toCol = toSquare.id.split('-')[1];
+        const fromKey = `${fromRow},${fromCol}`;
+        const possibleMoves = movesData[fromKey];
 
-    function updateGameStatus(status) {
-        const statusDiv = document.getElementById('game-status');
-        if (statusDiv) {
-            statusDiv.textContent = status;
-        } else {
-            console.error('Game status element not found.');
+        console.log(`Validating move from ${fromKey} to ${toRow}-${toCol}`, possibleMoves);
+
+        if (possibleMoves) {
+            return possibleMoves.some(move => move[0] === parseInt(toRow) && move[1] === parseInt(toCol));
         }
+        return false;
     }
-
-    setupBoard(); // Initialize the chessboard
+    setupBoard();
 });
