@@ -29,12 +29,12 @@ document.addEventListener("DOMContentLoaded", function() {
     function setupBoard() {
         board.innerHTML = '';
         const initialSetup = [
-            ['rook', 'knight', 'bishop', 'queen', 'king', 'bishop', 'knight', 'rook'],
+            ['rook', 'knight', 'bishop', 'king', 'queen', 'bishop', 'knight', 'rook'],
             ['pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn'],
             Array(8).fill(null), Array(8).fill(null),
             Array(8).fill(null), Array(8).fill(null),
             ['pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn'],
-            ['rook', 'knight', 'bishop', 'queen', 'king', 'bishop', 'knight', 'rook']
+            ['rook', 'knight', 'bishop', 'king', 'queen', 'bishop', 'knight', 'rook']
         ];
 
         for (let row = 0; row < 8; row++) {
@@ -47,14 +47,30 @@ document.addEventListener("DOMContentLoaded", function() {
                 if (piece) {
 
                     const color = row < 2 ? 'white' : (row >= 6 ? 'black' : '');
-                    square.style.backgroundImage = `url('resources/${color}_${piece}.png')`;
-                    square.style.backgroundSize = 'cover';
-                    square.style.backgroundRepeat = 'no-repeat';
-                    square.style.backgroundPosition = 'center';
+                    fetchImage(square, `${color}_${piece}`);
                 }
                 square.addEventListener('click', () => selectSquare(square));
             }
         }
+    }
+
+    function fetchImage(square, imageName) {
+        const imageUrl = `http://localhost:8080/WSChatServer-1.0-SNAPSHOT/resources/${imageName}.png`;
+        fetch(imageUrl)
+            .then(response => {
+                if (response.ok) {
+                    // Set the image directly using the URL since the response is OK
+                    square.style.backgroundImage = `url('${imageUrl}')`;
+                    square.style.backgroundSize = '70%';
+                    square.style.backgroundRepeat = 'no-repeat';
+                    square.style.backgroundPosition = 'center';
+                } else {
+                    throw new Error('Failed to fetch image');
+                }
+            })
+            .catch(error => {
+                console.error('Image load failed:', error);
+            });
     }
     function selectSquare(square) {
         if (selectedSquare === square) {
