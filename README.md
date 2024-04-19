@@ -29,7 +29,7 @@ To run the application locally, follow these steps:
 
 1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/OntarioTech-CS-program/w24-csci2020u-assignment02-gill-kalathia-sandhu-synytskyi.git
+   git clone https://github.com/OntarioTech-CS-program/w24-csci2020u-final-project-synytskyi-gill-kalathia-sandhu.git
 ## Open the Project in IntelliJ IDEA:
 1. Open IntelliJ IDEA.
 2. Choose `File > Open` from the menu.
