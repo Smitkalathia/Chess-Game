@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 if (response.ok) {
                     // Set the image directly using the URL since the response is OK
                     square.style.backgroundImage = `url('${imageUrl}')`;
-                    square.style.backgroundSize = '70%';
+                    square.style.backgroundSize = "90% 90%";
                     square.style.backgroundRepeat = 'no-repeat';
                     square.style.backgroundPosition = 'center';
                 } else {
