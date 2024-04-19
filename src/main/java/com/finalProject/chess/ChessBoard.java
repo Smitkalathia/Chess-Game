@@ -121,7 +121,7 @@ public class ChessBoard {
         if(pieceToMove.getClass().getSimpleName().equals("Pawn")){
             ((Pawn)pieceToMove).first_move = false;
         }
-        pieceToMove.checkForCheck(board);
+
         if(turn.equals("white")){
             turn = "black";
             for(Piece piece: blackPieces){
@@ -139,6 +139,9 @@ public class ChessBoard {
                 piece.enabled = false;
             }
         }
+        pieceToMove.checkForCheck(board);
+        whiteKingCheck = Piece.whiteKingCheck;
+        blackKingCheck = Piece.blackKingCheck;
 
         if(checkMate()){
             System.out.println("Game over");

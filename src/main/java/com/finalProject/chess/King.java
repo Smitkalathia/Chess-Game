@@ -15,7 +15,7 @@ public class King extends Piece{
         // down left
         if(row > 0 & column > 0){
             if(board[row - 1][column - 1]==null) {
-                possibleMoves.add(new Integer[]{row - 1, column});
+                possibleMoves.add(new Integer[]{row - 1, column - 1});
             }else {
                 if(!board[row - 1][column - 1].color.equals(color)){
                     possibleMoves.add(new Integer[]{row - 1, column - 1});
@@ -25,7 +25,7 @@ public class King extends Piece{
         // Move down right
         if(row > 0 & column < 7){
             if(board[row - 1][column + 1]==null) {
-                possibleMoves.add(new Integer[]{row - 1, column});
+                possibleMoves.add(new Integer[]{row - 1, column + 1});
             }else {
                 if(!board[row - 1][column + 1].color.equals(color)){
                     possibleMoves.add(new Integer[]{row - 1, column + 1});
@@ -35,7 +35,7 @@ public class King extends Piece{
         // Move up left
         if(row < 7 & column > 0){
             if(board[row + 1][column - 1]==null) {
-                possibleMoves.add(new Integer[]{row - 1, column});
+                possibleMoves.add(new Integer[]{row + 1, column - 1});
             }else {
                 if(!board[row + 1][column - 1].color.equals(color)){
                     possibleMoves.add(new Integer[]{row + 1, column - 1});
@@ -75,7 +75,7 @@ public class King extends Piece{
         // move left
         if(column > 0){
             if(board[row][column - 1]==null) {
-                possibleMoves.add(new Integer[]{row - 1, column});
+                possibleMoves.add(new Integer[]{row, column - 1});
             }else {
                 if(!board[row][column - 1].color.equals(color)){
                     possibleMoves.add(new Integer[]{row, column - 1});
@@ -85,7 +85,7 @@ public class King extends Piece{
         // move right
         if(column < 7){
             if(board[row][column + 1]==null) {
-                possibleMoves.add(new Integer[]{row - 1, column});
+                possibleMoves.add(new Integer[]{row, column + 1});
             }else {
                 if(!board[row][column + 1].color.equals(color)){
                     possibleMoves.add(new Integer[]{row, column + 1});
@@ -106,7 +106,7 @@ public class King extends Piece{
             for(Piece[] row: board){
                 for(Piece figure: row){
                     if(figure != null){
-                        if(!figure.color.equals(color)){
+                        if(!(figure.color.equals(color))){
                             figure.move(board);
                             enemyMoves.addAll(figure.possibleMoves);
                             figure.possibleMoves = new ArrayList<>();
@@ -116,7 +116,7 @@ public class King extends Piece{
             }
             board[move[0]][move[1]] = tempHolder;
             board[initialRow][initialCol] = piece;
-            if(enemyMoves.contains(new Integer[]{row, column})){
+            if(!(enemyMoves.contains(new Integer[]{row, column}))){
                 validMoves.add(move);
             }
         }

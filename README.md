@@ -10,7 +10,7 @@ https://youtu.be/6iKrftZGUD4
 ### Group Members
 - Smit Kalathia - Front End (JS, CSS And HTML), README file
 - Bav Sandhu - Front End (JS, CSS And HTML)
-- Bohdan Synytskyi - Back End
+- Bohdan Synytskyi - Game Engine, Back End, JS
 - Nimreet Gill - Back End
 
 ## Improvements

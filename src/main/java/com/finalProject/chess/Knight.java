@@ -120,10 +120,10 @@ public class Knight extends Piece{
                 }
             }
         }
-//        if(color.equals("white") & enabled){
-//            possibleMoves = blockMove(board, color, possibleMoves);
-//        } else if(color.equals("black") & enabled){
-//            possibleMoves = blockMove(board, color, possibleMoves);
-//        }
+        if(color.equals("white") & enabled){
+            possibleMoves = blockMove(board, color, possibleMoves);
+        } else if(color.equals("black") & enabled){
+            possibleMoves = blockMove(board, color, possibleMoves);
+        }
     }
 }
