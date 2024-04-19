@@ -57,6 +57,13 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
     function selectSquare(square) {
+        if (selectedSquare === square) {
+            clearHighlights();
+            square.classList.remove('selected');
+            selectedSquare = null;
+            return;
+        }
+
         if (!square.style.backgroundImage && !selectedSquare) {
             console.log("Clicked on empty square");
             return;
@@ -65,10 +72,8 @@ document.addEventListener("DOMContentLoaded", function() {
         if (selectedSquare) {
             if (isValidMove(selectedSquare, square)) {
                 movePiece(selectedSquare, square);
-                clearHighlights();
                 selectedSquare.classList.remove('selected');
                 selectedSquare = null;
-                return;
             } else {
                 clearHighlights();
                 selectedSquare.classList.remove('selected');
@@ -77,6 +82,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
 
         if (square.style.backgroundImage) {
+            clearHighlights();
             selectedSquare = square;
             square.classList.add('selected');
             highlightPossibleMoves(square);
@@ -94,15 +100,29 @@ document.addEventListener("DOMContentLoaded", function() {
                 const [moveRow, moveCol] = move;
                 const targetSquare = document.getElementById(`${moveRow}-${moveCol}`);
                 if (targetSquare) {
-                    targetSquare.classList.add('possible-move');
+                    if (targetSquare.style.backgroundImage) {
+                        if (isEnemyPiece(square, targetSquare)) {
+                            targetSquare.classList.add('capture-move');
+                        } else {
+                            targetSquare.classList.add('possible-move');
+                        }
+                    } else {
+                        targetSquare.classList.add('possible-move');
+                    }
                 }
             });
         }
     }
-
+    function isEnemyPiece(fromSquare, toSquare) {
+        const fromPiece = fromSquare.style.backgroundImage;
+        const toPiece = toSquare.style.backgroundImage;
+        return (fromPiece.includes('white') && toPiece.includes('black')) ||
+            (fromPiece.includes('black') && toPiece.includes('white'));
+    }
     function clearHighlights() {
-        document.querySelectorAll('.chess-square.possible-move').forEach(square => {
+        document.querySelectorAll('.chess-square.possible-move, .chess-square.capture-move').forEach(square => {
             square.classList.remove('possible-move');
+            square.classList.remove('capture-move');
         });
     }
 
@@ -118,6 +138,13 @@ document.addEventListener("DOMContentLoaded", function() {
         fromSquare.style.backgroundSize = '';
         fromSquare.style.backgroundRepeat = '';
         fromSquare.style.backgroundPosition = '';
+
+        clearHighlights();
+
+        if (selectedSquare) {
+            selectedSquare.classList.remove('selected');
+            selectedSquare = null;
+        }
 
         movesData = {};
         const moveData = {};
